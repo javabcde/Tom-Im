@@ -1,11 +1,13 @@
 package server.serverHandler;
 
+import cn.hutool.core.util.IdUtil;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import java.util.UUID;
 import protocol.requestPacket.LoginRequestPacket;
 import protocol.responsePacket.LoginResponsePacket;
+import session.Session;
+import session.SessionUtil;
 
 /**
  * 登录处理类
@@ -37,14 +39,17 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
     LoginResponsePacket loginResponsePacket = new LoginResponsePacket();
     loginResponsePacket.setUserName(msg.getUserName());
     loginResponsePacket.setVersion(msg.getVersion());
-    if (vailid(msg)) {
-      loginResponsePacket.setUserId(UUID.randomUUID().toString().split("-")[0]);
+    if (vailid(msg) || !SessionUtil.checkLogin(ctx.channel())) {
+      loginResponsePacket.setUserId(IdUtil.fastUUID().split("-")[0]);
       loginResponsePacket.setSuccess(true);
-      //todo 需要有一个记录用户登录状态的session 工具
+      SessionUtil.bindSession(new Session(loginResponsePacket.getUserId(),loginResponsePacket.getUserName()),ctx.channel());
       System.out.println("用户[" + msg.getUserName() + "]登录成功!!!!");
     } else {
       loginResponsePacket.setSuccess(false);
+      loginResponsePacket.setReason("用户名密码不对 或者 用户已经登录了");
     }
+    //直接可以通知 缩短流程
+    ctx.writeAndFlush(loginResponsePacket);
   }
 
   private boolean vailid(LoginRequestPacket msg) {
