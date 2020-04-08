@@ -1,5 +1,6 @@
 package session;
 
+import codec.BussinessCodec;
 import io.netty.channel.Channel;
 import io.netty.util.internal.PlatformDependent;
 import java.util.concurrent.ConcurrentMap;
@@ -29,7 +30,9 @@ public class SessionUtil {
       channel.attr(AttributeKeyUtil.Session).set(session);
       sessionMap.put(session, channel);
     } else if (localSession != session) {
-      throw new Exception("localSession != session");
+      BussinessCodec bussinessCodec = new BussinessCodec("客户端已经登录成功 请不要重新登录",-1);
+      channel.writeAndFlush(bussinessCodec);
+      throw new Exception("localSession != session 客户端已经登录成功 但是强行多次登录 断开连接");
     }
   }
 

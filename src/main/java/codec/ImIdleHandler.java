@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ImIdleHandler extends IdleStateHandler {
 
-  private static final Long READER_IDLE_TIME = 15L;
+  private static final Long READER_IDLE_TIME = 240L;
 
   /**
    * 这些参数源码里面都有解释

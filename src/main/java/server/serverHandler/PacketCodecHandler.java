@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
+import java.io.IOException;
 import java.util.List;
 import protocol.Packet;
 import protocol.PacketCodec;
@@ -43,5 +44,21 @@ public class PacketCodecHandler extends MessageToMessageCodec<ByteBuf, Packet> {
   @Override
   protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
     out.add(PacketCodec.INSTANCE.decode(msg));
+  }
+
+  /**
+   * Calls {@link ChannelHandlerContext#fireExceptionCaught(Throwable)} to forward
+   * to the next {@link ChannelHandler} in the {@link ChannelPipeline}.
+   *
+   * Sub-classes may override this method to change behavior.
+   *
+   * @param ctx
+   * @param cause
+   */
+  @Override
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    if (cause instanceof IOException){
+      System.out.println(cause.getMessage());
+    }
   }
 }

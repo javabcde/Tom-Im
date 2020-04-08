@@ -59,4 +59,8 @@ public interface Command {
     Byte HEARTBEAT_REQUEST = 17;
 
     Byte HEARTBEAT_RESPONSE = 18;
+    /**
+     * 业务信息
+     */
+    Byte BUSSINESS_CODEC = 19;
 }

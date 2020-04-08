@@ -1,5 +1,8 @@
 package client;
 
+import client.clientHandler.BussinessExceptionHandler;
+import client.clientHandler.LoginResponseHandler;
+import codec.BussinessCodec;
 import codec.SpliterPacket;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -31,7 +34,10 @@ public class ImClientInitializer extends ChannelInitializer<NioSocketChannel> {
     pipeline.addLast(new SpliterPacket());
     //转成对应的实体
     pipeline.addLast(PacketCodecHandler.Instance);
+
+    pipeline.addLast(BussinessExceptionHandler.Instance);
     //处理登录响应
+    pipeline.addLast(LoginResponseHandler.Instance);
 
 
   }

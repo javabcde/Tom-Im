@@ -1,6 +1,7 @@
 package protocol;
 
 
+import static protocol.command.Command.BUSSINESS_CODEC;
 import static protocol.command.Command.CREATE_GROUP_REQUEST;
 import static protocol.command.Command.CREATE_GROUP_RESPONSE;
 import static protocol.command.Command.GROUP_MESSAGE_REQUEST;
@@ -20,6 +21,7 @@ import static protocol.command.Command.MESSAGE_RESPONSE;
 import static protocol.command.Command.QUIT_GROUP_REQUEST;
 import static protocol.command.Command.QUIT_GROUP_RESPONSE;
 
+import codec.BussinessCodec;
 import io.netty.buffer.ByteBuf;
 import java.util.HashMap;
 import java.util.Map;
@@ -95,6 +97,7 @@ public class PacketCodec {
         packetTypeMap.put(GROUP_MESSAGE_RESPONSE, GroupMessageResponsePacket.class);
         packetTypeMap.put(HEARTBEAT_REQUEST, HeartBeatRequestPacket.class);
         packetTypeMap.put(HEARTBEAT_RESPONSE, HeartBeatResponsePacket.class);
+        packetTypeMap.put(BUSSINESS_CODEC, BussinessCodec.class);
 
         serializerMap = new HashMap<>();
         Serializer serializer = new JSONSerializer();
