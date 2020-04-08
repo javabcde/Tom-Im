@@ -1,20 +1,14 @@
 package client;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
+import client.clientAction.ClientBusinessAction;
+import client.clientAction.ClientLoginAction;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import protocol.requestPacket.LoginRequestPacket;
-import session.AttributeKeyUtil;
 import session.SessionUtil;
 
 /**
@@ -48,29 +42,11 @@ public class ImClient {
       Channel channel = sync.channel();
       if (SessionUtil.checkLogin(channel)) {
         //todo 登陆了 进行业务指令操作
+        ClientBusinessAction clientBusinessAction = new ClientBusinessAction();
+        clientBusinessAction.clientExec(channel);
       } else {
-        //进行登录操作
-        Scanner scanner = new Scanner(System.in);
-        new Thread(() -> {
-          boolean threadRunFlag = false;
-          while (!Thread.interrupted() && !threadRunFlag) {
-            if (!SessionUtil.checkLogin(channel)) {
-              //用户名#密码
-              System.out.println("请输入用户名#密码");
-              String[] userNameAndPass = scanner.next().split("#");
-              LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
-              loginRequestPacket.setUserName(userNameAndPass[0]);
-              loginRequestPacket.setPassword(userNameAndPass[1]);
-              channel.writeAndFlush(loginRequestPacket);
-              Future<Boolean> booleanFuture = SessionUtil.checkCheckLogin(channel);
-              try {
-                threadRunFlag = booleanFuture.get(50, TimeUnit.SECONDS);
-              } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                e.printStackTrace();
-              }
-            }
-          }
-        }).start();
+        ClientLoginAction clientLoginAction = new ClientLoginAction();
+        clientLoginAction.clientExec(channel);
       }
     }
   }
