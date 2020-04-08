@@ -17,9 +17,11 @@ import session.SessionUtil;
 public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginResponsePacket> {
 
   public static LoginResponseHandler Instance;
+
   static {
     Instance = new LoginResponseHandler();
   }
+
   /**
    * <strong>Please keep in mind that this method will be renamed to
    * {@code messageReceived(ChannelHandlerContext, I)} in 5.0.</strong>
@@ -33,10 +35,10 @@ public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginRespo
    */
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, LoginResponsePacket msg) throws Exception {
-    if (msg.isSuccess()){
-      System.out.println("客户端处理响应登录成功"+ JSON.toJSONString(msg));
+    if (msg.isSuccess()) {
+      System.out.println("客户端处理响应登录成功" + JSON.toJSONString(msg));
       //成功
-      SessionUtil.bindSession(new Session(msg.getUserId(),msg.getUserName()),ctx.channel());
+      SessionUtil.bindSession(new Session(msg.getUserId(), msg.getUserName()), ctx.channel());
 
     } else {
       //失败

@@ -9,4 +9,6 @@ import io.netty.util.AttributeKey;
 public class AttributeKeyUtil {
   public static final AttributeKey<Session> Session = AttributeKey.newInstance("Session");
 
+  public static final AttributeKey<Boolean> loginSuccessFlag= AttributeKey.newInstance("loginSuccessFlag");
+
 }

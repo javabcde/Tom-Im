@@ -8,8 +8,13 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import protocol.requestPacket.LoginRequestPacket;
+import session.AttributeKeyUtil;
 import session.SessionUtil;
 
 /**
@@ -47,7 +52,8 @@ public class ImClient {
         //进行登录操作
         Scanner scanner = new Scanner(System.in);
         new Thread(() -> {
-          while (!Thread.interrupted()) {
+          boolean threadRunFlag = false;
+          while (!Thread.interrupted() && !threadRunFlag) {
             if (!SessionUtil.checkLogin(channel)) {
               //用户名#密码
               System.out.println("请输入用户名#密码");
@@ -56,6 +62,12 @@ public class ImClient {
               loginRequestPacket.setUserName(userNameAndPass[0]);
               loginRequestPacket.setPassword(userNameAndPass[1]);
               channel.writeAndFlush(loginRequestPacket);
+              Future<Boolean> booleanFuture = SessionUtil.checkCheckLogin(channel);
+              try {
+                threadRunFlag = booleanFuture.get(50, TimeUnit.SECONDS);
+              } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                e.printStackTrace();
+              }
             }
           }
         }).start();

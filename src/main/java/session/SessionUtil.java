@@ -3,7 +3,10 @@ package session;
 import codec.BussinessCodec;
 import io.netty.channel.Channel;
 import io.netty.util.internal.PlatformDependent;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 /**
  * Created by TOM
@@ -58,6 +61,14 @@ public class SessionUtil {
 
   public static Channel getChannelBySession(Session session) {
     return sessionMap.get(session);
+  }
+  /**
+   *
+   * @param channel
+   * @return ture 登陆了 false 没登陆
+   */
+  public static Future<Boolean> checkCheckLogin(Channel channel){
+    return new FutureTask<>(() -> channel.attr(AttributeKeyUtil.Session).get() != null);
   }
 
 }
