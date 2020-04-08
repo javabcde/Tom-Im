@@ -42,14 +42,20 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
     if (vailid(msg) || !SessionUtil.checkLogin(ctx.channel())) {
       loginResponsePacket.setUserId(IdUtil.fastUUID().split("-")[0]);
       loginResponsePacket.setSuccess(true);
-      SessionUtil.bindSession(new Session(loginResponsePacket.getUserId(),loginResponsePacket.getUserName()),ctx.channel());
+      SessionUtil
+          .bindSession(new Session(loginResponsePacket.getUserId(), loginResponsePacket.getUserName()), ctx.channel());
       System.out.println("用户[" + msg.getUserName() + "]登录成功!!!!");
+      //直接可以通知 缩短流程
+      ctx.writeAndFlush(loginResponsePacket);
     } else {
       loginResponsePacket.setSuccess(false);
       loginResponsePacket.setReason("用户名密码不对 或者 用户已经登录了");
+      //直接可以通知 缩短流程
+      ctx.writeAndFlush(loginResponsePacket);
+      //直接关闭
+      ctx.channel().close();
     }
-    //直接可以通知 缩短流程
-    ctx.writeAndFlush(loginResponsePacket);
+
   }
 
   private boolean vailid(LoginRequestPacket msg) {

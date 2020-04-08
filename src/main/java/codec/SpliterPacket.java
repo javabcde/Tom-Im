@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 /**
+ * 拆包
  * Created by TOM
  * On 2020/4/7 16:46
  */
@@ -40,7 +41,7 @@ public class SpliterPacket extends LengthFieldBasedFrameDecoder {
   protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
     //最开始的位置 读个魔数
     if (in.getInt(in.readerIndex()) != MAGIC_NUMBER) {
-      ctx.channel().writeAndFlush("不是此协议的请求 拒接接受");
+      ctx.writeAndFlush("不是此协议的请求 拒接接受");
       ctx.channel().close();
       return null;
     }

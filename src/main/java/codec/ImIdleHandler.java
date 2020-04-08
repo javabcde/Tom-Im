@@ -1,4 +1,4 @@
-package server.serverHandler;
+package codec;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleStateEvent;

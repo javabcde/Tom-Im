@@ -1,11 +1,12 @@
 package server;
 
 import codec.SpliterPacket;
-import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import server.serverHandler.ImIdleHandler;
+import server.serverHandler.AuthHandler;
+import server.serverHandler.HeartBeatRequestHandler;
+import codec.ImIdleHandler;
 import server.serverHandler.LoginRequestHandler;
 import server.serverHandler.PacketCodecHandler;
 
@@ -13,7 +14,6 @@ import server.serverHandler.PacketCodecHandler;
  * Created by TOM
  * On 2020/4/7 16:21
  */
-@Sharable
 public class ImServerInitializer extends ChannelInitializer<NioSocketChannel> {
 
   @Override
@@ -26,7 +26,13 @@ public class ImServerInitializer extends ChannelInitializer<NioSocketChannel> {
     pipeline.addLast(new SpliterPacket());
     //转成对应的实体
     pipeline.addLast(PacketCodecHandler.Instance);
-    //以下进行各种业务处理
+    //以下进行各种业务前处理
+    //登录请求处理
     pipeline.addLast(LoginRequestHandler.Instance);
+    pipeline.addLast(HeartBeatRequestHandler.Instance);
+    //验证是否有权限进行后续逻辑操作
+    pipeline.addLast(AuthHandler.Instance);
+    //todo 业务处理
+
   }
 }

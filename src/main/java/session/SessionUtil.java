@@ -1,7 +1,8 @@
 package session;
 
 import io.netty.channel.Channel;
-import java.util.concurrent.ConcurrentHashMap;
+import io.netty.util.internal.PlatformDependent;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created by TOM
@@ -12,7 +13,7 @@ public class SessionUtil {
   /**
    * 超时 空闲连接 由idle去做
    */
-  private static ConcurrentHashMap<Session, Channel> sessionMap = new ConcurrentHashMap<>();
+  private static ConcurrentMap<Session, Channel> sessionMap =  PlatformDependent.newConcurrentHashMap();
 
 
   /**
