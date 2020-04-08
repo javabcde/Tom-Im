@@ -3,7 +3,6 @@ package session;
 import codec.BussinessCodec;
 import io.netty.channel.Channel;
 import io.netty.util.internal.PlatformDependent;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -17,7 +16,9 @@ public class SessionUtil {
   /**
    * 超时 空闲连接 由idle去做
    */
-  private static ConcurrentMap<Session, Channel> sessionMap =  PlatformDependent.newConcurrentHashMap();
+  private static ConcurrentMap<Session, Channel> sessionMap = PlatformDependent.newConcurrentHashMap();
+
+  public static ConcurrentMap<Channel, Integer> countLogin = PlatformDependent.newConcurrentHashMap();
 
 
   /**
@@ -30,10 +31,12 @@ public class SessionUtil {
     //原子保证 get()
     Session localSession = channel.attr(AttributeKeyUtil.Session).get();
     if (localSession == null) {
+      //肯定是没有登录
       channel.attr(AttributeKeyUtil.Session).set(session);
       sessionMap.put(session, channel);
+      countLogin.put(channel, 1);
     } else if (localSession != session) {
-      BussinessCodec bussinessCodec = new BussinessCodec("客户端已经登录成功 请不要重新登录",-1);
+      BussinessCodec bussinessCodec = new BussinessCodec("客户端已经登录成功 请不要重新登录", -1);
       channel.writeAndFlush(bussinessCodec);
       throw new Exception("localSession != session 客户端已经登录成功 但是强行多次登录 断开连接");
     }
@@ -48,10 +51,10 @@ public class SessionUtil {
     Session session = channel.attr(AttributeKeyUtil.Session).get();
     sessionMap.remove(session);
     channel.attr(AttributeKeyUtil.Session).set(null);
+    countLogin.remove(channel);
   }
 
   /**
-   *
    * @param channel
    * @return ture 登陆了 false 没登陆
    */
@@ -61,14 +64,6 @@ public class SessionUtil {
 
   public static Channel getChannelBySession(Session session) {
     return sessionMap.get(session);
-  }
-  /**
-   *
-   * @param channel
-   * @return ture 登陆了 false 没登陆
-   */
-  public static Future<Boolean> checkCheckLogin(Channel channel){
-    return new FutureTask<>(() -> channel.attr(AttributeKeyUtil.Session).get() != null);
   }
 
 }

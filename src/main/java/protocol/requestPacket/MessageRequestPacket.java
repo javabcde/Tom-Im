@@ -3,12 +3,14 @@ package protocol.requestPacket;
 
 import static protocol.command.Command.MESSAGE_REQUEST;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import protocol.Packet;
 
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class MessageRequestPacket extends Packet {
     private String toUserId;
