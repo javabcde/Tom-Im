@@ -8,6 +8,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import java.util.HashMap;
 import java.util.Map;
 import protocol.Packet;
+import utils.BusinessThreadUtil;
 
 /**
  * 业务处理
@@ -39,6 +40,12 @@ public class ImBusinessHandler extends SimpleChannelInboundHandler<Packet> {
    */
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, Packet msg) throws Exception {
-    businessMap.get(msg.getCommand()).channelRead(ctx, msg);
+    BusinessThreadUtil.ImBusinessExec.execute(() -> {
+      try {
+        businessMap.get(msg.getCommand()).channelRead(ctx, msg);
+      } catch (Exception e) {
+        System.out.println("channelReadException");
+      }
+    });
   }
 }
