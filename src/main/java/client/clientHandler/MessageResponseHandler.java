@@ -26,6 +26,6 @@ public class MessageResponseHandler extends SimpleChannelInboundHandler<MessageR
    */
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, MessageResponsePacket msg) throws Exception {
-    System.out.println(JSON.toJSONString(msg));
+    System.out.println("收到来自用户[" + msg.getFromUserId() + "]的消息[" + msg.getMessage() + "]");
   }
 }
