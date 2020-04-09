@@ -1,5 +1,7 @@
 package client;
 
+import static server.ImServer.PORT;
+
 import client.clientAction.ClientBusinessActionCenter;
 import client.clientAction.ClientLoginAction;
 import io.netty.bootstrap.Bootstrap;
@@ -18,7 +20,6 @@ import session.SessionUtil;
  */
 public class ImClient {
 
-  private static Integer PORT = 8888;
 
   public static void main(String[] args) throws InterruptedException {
     NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();

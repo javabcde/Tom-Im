@@ -4,8 +4,6 @@ import codec.BussinessCodec;
 import io.netty.channel.Channel;
 import io.netty.util.internal.PlatformDependent;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 /**
  * Created by TOM
@@ -16,7 +14,7 @@ public class SessionUtil {
   /**
    * 超时 空闲连接 由idle去做
    */
-  private static ConcurrentMap<Session, Channel> sessionMap = PlatformDependent.newConcurrentHashMap();
+  private static ConcurrentMap<String, Channel> sessionMap = PlatformDependent.newConcurrentHashMap();
 
   public static ConcurrentMap<Channel, Integer> countLogin = PlatformDependent.newConcurrentHashMap();
 
@@ -33,7 +31,7 @@ public class SessionUtil {
     if (localSession == null) {
       //肯定是没有登录
       channel.attr(AttributeKeyUtil.Session).set(session);
-      sessionMap.put(session, channel);
+      sessionMap.put(session.getUserId(), channel);
       countLogin.put(channel, 1);
     } else if (localSession != session) {
       BussinessCodec bussinessCodec = new BussinessCodec("客户端已经登录成功 请不要重新登录", -1);
@@ -49,7 +47,7 @@ public class SessionUtil {
    */
   public static void unBindSession(Channel channel) {
     Session session = channel.attr(AttributeKeyUtil.Session).get();
-    sessionMap.remove(session);
+    sessionMap.remove(session.getUserId());
     channel.attr(AttributeKeyUtil.Session).set(null);
     countLogin.remove(channel);
   }
@@ -62,8 +60,8 @@ public class SessionUtil {
     return channel.attr(AttributeKeyUtil.Session).get() != null;
   }
 
-  public static Channel getChannelBySession(Session session) {
-    return sessionMap.get(session);
+  public static Channel getChannelBySessionUserId(String sessionUserId) {
+    return sessionMap.get(sessionUserId);
   }
 
 }

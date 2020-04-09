@@ -12,7 +12,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  */
 public class ImServer {
 
-  private static Integer PORT = 8888;
+  public static Integer PORT = 8888;
 
   public static void main(String[] args) {
     NioEventLoopGroup bossLoopGroup = new NioEventLoopGroup();

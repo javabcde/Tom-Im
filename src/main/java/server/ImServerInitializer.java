@@ -7,6 +7,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import server.serverHandler.AuthHandler;
 import server.serverHandler.HeartBeatRequestHandler;
 import codec.ImIdleHandler;
+import server.serverHandler.ImBusinessHandler;
 import server.serverHandler.LoginRequestHandler;
 import server.serverHandler.PacketCodecHandler;
 
@@ -32,7 +33,7 @@ public class ImServerInitializer extends ChannelInitializer<NioSocketChannel> {
     pipeline.addLast(HeartBeatRequestHandler.Instance);
     //验证是否有权限进行后续逻辑操作
     pipeline.addLast(AuthHandler.Instance);
-    //todo 业务处理
-
+    //业务处理
+    pipeline.addLast(ImBusinessHandler.Instance);
   }
 }
