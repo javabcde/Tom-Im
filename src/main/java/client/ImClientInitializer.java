@@ -1,6 +1,7 @@
 package client;
 
 import client.clientHandler.BussinessExceptionHandler;
+import client.clientHandler.ImClientBusinessHandler;
 import client.clientHandler.LoginResponseHandler;
 import client.clientHandler.MessageResponseHandler;
 import codec.BussinessCodec;
@@ -37,10 +38,8 @@ public class ImClientInitializer extends ChannelInitializer<NioSocketChannel> {
     pipeline.addLast(PacketCodecHandler.Instance);
 
     pipeline.addLast(BussinessExceptionHandler.Instance);
-    //处理登录响应
-    pipeline.addLast(LoginResponseHandler.Instance);
-
-    pipeline.addLast(new MessageResponseHandler());
+    //处理业务
+    pipeline.addLast(ImClientBusinessHandler.Instance);
 
 
   }

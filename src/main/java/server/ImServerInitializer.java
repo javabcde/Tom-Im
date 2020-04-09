@@ -7,7 +7,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import server.serverHandler.AuthHandler;
 import server.serverHandler.HeartBeatRequestHandler;
 import codec.ImIdleHandler;
-import server.serverHandler.ImBusinessHandler;
+import server.serverHandler.ImServiceBusinessHandler;
 import server.serverHandler.LoginRequestHandler;
 import server.serverHandler.PacketCodecHandler;
 
@@ -19,7 +19,6 @@ public class ImServerInitializer extends ChannelInitializer<NioSocketChannel> {
 
   @Override
   protected void initChannel(NioSocketChannel ch) throws Exception {
-    //todo 后续这里业务改成异步
     ChannelPipeline pipeline = ch.pipeline();
     //监测空连接 这个源码还没看 我只是会用.....
     pipeline.addLast(new ImIdleHandler());
@@ -34,6 +33,6 @@ public class ImServerInitializer extends ChannelInitializer<NioSocketChannel> {
     //验证是否有权限进行后续逻辑操作
     pipeline.addLast(AuthHandler.Instance);
     //业务处理
-    pipeline.addLast(ImBusinessHandler.Instance);
+    pipeline.addLast(ImServiceBusinessHandler.Instance);
   }
 }

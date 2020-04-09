@@ -16,14 +16,14 @@ import utils.BusinessThreadUtil;
  * On 2020/4/8 13:55
  */
 @Sharable
-public class ImBusinessHandler extends SimpleChannelInboundHandler<Packet> {
+public class ImServiceBusinessHandler extends SimpleChannelInboundHandler<Packet> {
 
-  public static ImBusinessHandler Instance;
+  public static ImServiceBusinessHandler Instance;
 
   private static Map<Byte, SimpleChannelInboundHandler<? extends Packet>> businessMap = new HashMap<>(16);
 
   static {
-    Instance = new ImBusinessHandler();
+    Instance = new ImServiceBusinessHandler();
     businessMap.put(MESSAGE_REQUEST, new MessageRequestHandler());
   }
 
