@@ -19,6 +19,7 @@ public class ImServerInitializer extends ChannelInitializer<NioSocketChannel> {
 
   @Override
   protected void initChannel(NioSocketChannel ch) throws Exception {
+    //只执行一次
     ChannelPipeline pipeline = ch.pipeline();
     //监测空连接 这个源码还没看 我只是会用.....
     pipeline.addLast(new ImIdleHandler());

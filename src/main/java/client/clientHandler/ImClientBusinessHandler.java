@@ -1,6 +1,7 @@
 package client.clientHandler;
 
 import static protocol.command.Command.LOGIN_RESPONSE;
+import static protocol.command.Command.LOGOUT_RESPONSE;
 import static protocol.command.Command.MESSAGE_RESPONSE;
 
 import io.netty.channel.ChannelHandler.Sharable;
@@ -25,6 +26,7 @@ public class ImClientBusinessHandler extends SimpleChannelInboundHandler<Packet>
     Instance = new ImClientBusinessHandler();
     businessMap.put(MESSAGE_RESPONSE, new MessageResponseHandler());
     businessMap.put(LOGIN_RESPONSE, new LoginResponseHandler());
+    businessMap.put(LOGOUT_RESPONSE,new LogoutResponseHandler());
   }
 
   /**

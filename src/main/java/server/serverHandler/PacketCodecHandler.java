@@ -43,6 +43,7 @@ public class PacketCodecHandler extends MessageToMessageCodec<ByteBuf, Packet> {
    */
   @Override
   protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
+    //经过拆包了 这肯定是一个对象
     out.add(PacketCodec.INSTANCE.decode(msg));
   }
 

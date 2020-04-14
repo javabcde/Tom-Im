@@ -17,6 +17,7 @@ public class ClientBusinessActionCenter implements ClientSystemAction {
 
   static {
     chooseMap.put(Command.MESSAGE_REQUEST.toString(), new MessageToUserHandler());
+    chooseMap.put(Command.LOGOUT_REQUEST.toString(),new LoginoutAction());
   }
 
 
