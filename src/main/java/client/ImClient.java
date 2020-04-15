@@ -52,7 +52,7 @@ public class ImClient {
       }
     });
   }
-
+  //todo 断线重连 服务端重新连接不上
   public static ChannelFuture connectServer(Bootstrap bootstrap,EventLoopGroup eventLoopGroup){
     ChannelFuture channelFuture = null;
     if (bootstrap!=null){
