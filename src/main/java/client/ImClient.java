@@ -23,11 +23,10 @@ import session.SessionUtil;
 public class ImClient {
 
 
-
   public static void main(String[] args) throws InterruptedException {
     NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
     Bootstrap bootstrap = new Bootstrap();
-    ChannelFuture sync = connectServer(bootstrap,nioEventLoopGroup);
+    ChannelFuture sync = connectServer(bootstrap, nioEventLoopGroup);
     sync.addListener(listener -> {
       if (listener.isSuccess()) {
         Channel channel = sync.channel();
@@ -52,10 +51,11 @@ public class ImClient {
       }
     });
   }
+
   //todo 断线重连 服务端重新连接不上
-  public static ChannelFuture connectServer(Bootstrap bootstrap,EventLoopGroup eventLoopGroup){
+  public static ChannelFuture connectServer(Bootstrap bootstrap, EventLoopGroup eventLoopGroup) {
     ChannelFuture channelFuture = null;
-    if (bootstrap!=null){
+    if (bootstrap != null) {
       bootstrap.group(eventLoopGroup)
           .channel(NioSocketChannel.class)
           .option(ChannelOption.SO_KEEPALIVE, true)
@@ -65,7 +65,9 @@ public class ImClient {
         final EventLoop eventLoop = futureListener.channel().eventLoop();
         if (!futureListener.isSuccess()) {
           System.out.println("与服务端断开连接!在3s之后准备尝试重连!");
-          eventLoop.schedule(() -> connectServer(new Bootstrap(), eventLoop),3, TimeUnit.SECONDS);
+          eventLoop.schedule(() -> connectServer(new Bootstrap(), eventLoop), 3, TimeUnit.SECONDS);
+        } else {
+          System.out.println("连接服务器成功!!!");
         }
       });
     }
