@@ -8,6 +8,8 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import session.AttributeKeyUtil;
+import session.SessionUtil;
 
 /**
  * Created by TOM
@@ -32,11 +34,5 @@ public class ImIdleHandler extends IdleStateHandler {
   protected void channelIdle(ChannelHandlerContext ctx, IdleStateEvent evt) throws Exception {
     System.out.println(READER_IDLE_TIME + "SECONDS 没有读取任何数据-断开连接");
     ctx.channel().close();
-  }
-
-  @Override
-  public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-    ImClient.connectServer(new Bootstrap(),ctx.channel().eventLoop());
-    super.channelInactive(ctx);
   }
 }

@@ -1,6 +1,7 @@
 package client;
 
 import static server.ImServer.PORT;
+import static utils.BusinessThreadUtil.ImBusinessExec;
 
 import client.clientAction.ClientBusinessActionCenter;
 import client.clientAction.ClientLoginAction;
@@ -13,6 +14,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import session.SessionUtil;
 
@@ -21,39 +24,42 @@ import session.SessionUtil;
  * On 2020/4/8 14:15
  */
 public class ImClient {
-
+  //true run;false norun
+  private static boolean actionThreadFlag = true;
 
   public static void main(String[] args) throws InterruptedException {
     NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
     Bootstrap bootstrap = new Bootstrap();
-    ChannelFuture sync = connectServer(bootstrap, nioEventLoopGroup);
-    sync.addListener(listener -> {
-      if (listener.isSuccess()) {
-        Channel channel = sync.channel();
-        Scanner scanner = new Scanner(System.in);
-        new Thread(() -> {
-          while (!Thread.interrupted()) {
-            if (SessionUtil.checkLogin(channel)) {
-              //登陆了 进行业务指令操作
-              ClientBusinessActionCenter clientBusinessAction = new ClientBusinessActionCenter();
-              clientBusinessAction.clientExec(scanner, channel);
-            } else {
-              System.out.println("没有登录请进行登录");
-              ClientLoginAction clientLoginAction = new ClientLoginAction();
-              try {
-                clientLoginAction.clientExec(scanner, channel);
-              } catch (InterruptedException e) {
-                e.printStackTrace();
-              }
-            }
+    ChannelFuture channelFuture = connectServer(bootstrap, nioEventLoopGroup,false);
+    //阻塞
+    channelFuture.channel().closeFuture().sync();
+  }
+
+  private static void UserActionThread(ChannelFuture channelFuture) {
+    Channel channel = channelFuture.channel();
+    Scanner scanner = new Scanner(System.in);
+    ImBusinessExec.execute(() -> {
+      System.out.println(Thread.currentThread().getName()+Thread.currentThread().getId());
+      while (actionThreadFlag) {
+        if (SessionUtil.checkLogin(channel)) {
+          //登陆了 进行业务指令操作
+          ClientBusinessActionCenter clientBusinessAction = new ClientBusinessActionCenter();
+          clientBusinessAction.clientExec(scanner, channel);
+        } else {
+          System.out.println("没有登录请进行登录");
+          ClientLoginAction clientLoginAction = new ClientLoginAction();
+          try {
+            clientLoginAction.clientExec(scanner, channel);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
           }
-        }).start();
+        }
       }
     });
   }
 
-  //todo 断线重连 服务端重新连接不上
-  public static ChannelFuture connectServer(Bootstrap bootstrap, EventLoopGroup eventLoopGroup) {
+
+  public static ChannelFuture connectServer(Bootstrap bootstrap, EventLoopGroup eventLoopGroup,boolean reConnect){
     ChannelFuture channelFuture = null;
     if (bootstrap != null) {
       bootstrap.group(eventLoopGroup)
@@ -65,9 +71,12 @@ public class ImClient {
         final EventLoop eventLoop = futureListener.channel().eventLoop();
         if (!futureListener.isSuccess()) {
           System.out.println("与服务端断开连接!在3s之后准备尝试重连!");
-          eventLoop.schedule(() -> connectServer(new Bootstrap(), eventLoop), 3, TimeUnit.SECONDS);
+          actionThreadFlag = !reConnect;
+          eventLoop.schedule(() -> connectServer(new Bootstrap(), eventLoop,true), 3, TimeUnit.SECONDS);
         } else {
           System.out.println("连接服务器成功!!!");
+          actionThreadFlag = true;
+          UserActionThread(futureListener);
         }
       });
     }

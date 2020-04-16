@@ -1,7 +1,9 @@
 package client.clientHandler;
 
+import client.ImClient;
 import codec.BussinessCodec;
 import com.alibaba.fastjson.JSON;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -12,10 +14,13 @@ import io.netty.channel.SimpleChannelInboundHandler;
  */
 @Sharable
 public class BussinessExceptionHandler extends SimpleChannelInboundHandler<BussinessCodec> {
+
   public static BussinessExceptionHandler Instance;
+
   static {
     Instance = new BussinessExceptionHandler();
   }
+
   /**
    * <strong>Please keep in mind that this method will be renamed to
    * {@code messageReceived(ChannelHandlerContext, I)} in 5.0.</strong>
@@ -31,5 +36,11 @@ public class BussinessExceptionHandler extends SimpleChannelInboundHandler<Bussi
   protected void channelRead0(ChannelHandlerContext ctx, BussinessCodec msg) throws Exception {
     System.out.println(JSON.toJSONString(msg));
     ctx.channel().close();
+  }
+
+  @Override
+  public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    ImClient.connectServer(new Bootstrap(), ctx.channel().eventLoop(),true);
+    super.channelInactive(ctx);
   }
 }
